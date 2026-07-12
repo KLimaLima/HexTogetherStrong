@@ -18,7 +18,6 @@
 #include <stdio.h>                          // Required for: printf()
 #include <stdlib.h>                         // Required for: 
 #include <string.h>                         // Required for:
-// #include <math.h>
 #include <cmath>
 
 //----------------------------------------------------------------------------------
@@ -53,6 +52,7 @@ static const int screenHeight = 720;
 
 static RenderTexture2D target = { 0 };  // Render texture to render our game
 static int frameCounter = 0;
+static Texture2D texUI;
 
 // TODO: Define global variables here, recommended to make them static
 
@@ -75,6 +75,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "raylib gamejam template");
     
     // TODO: Load resources / Initialize variables at this point
+    texUI = LoadTexture("resources/button.png");
     
     // Render texture to draw, enables screen scaling
     // NOTE: If screen is scaled, mouse input should be scaled proportionally
@@ -97,6 +98,8 @@ int main(void)
     // De-Initialization
     //--------------------------------------------------------------------------------------
     UnloadRenderTexture(target);
+
+    UnloadTexture(texUI);
     
     // TODO: Unload all loaded resources at this point
 
@@ -134,11 +137,11 @@ public:
 
     void draw() {
 
-        DrawPoly((Vector2){ xcenter, ycenter }, 6, radius, 0.0f, SKYBLUE);
-        DrawPolyLinesEx((Vector2){ xcenter, ycenter }, 6, radius, 0.0f, tebal, GOLD);
+        DrawPoly((Vector2){ xcenter, ycenter }, 6, radius, 0.0f, (Color){183, 216, 156,255});
+        DrawPolyLinesEx((Vector2){ xcenter, ycenter }, 6, radius, 0.0f, tebal, (Color){7, 30, 15,255});
 
         for (int i = 0; i < 6; i++) {
-            DrawLineEx((Vector2){ xcenter, ycenter }, (Vector2){ xcenter + (radius - 3) * cos(i * angle), ycenter + (radius - 3) * sin(i * angle) }, tebal, GOLD);
+            DrawLineEx((Vector2){ xcenter, ycenter }, (Vector2){ xcenter + (radius - 3) * cos(i * angle), ycenter + (radius - 3) * sin(i * angle) }, tebal, (Color){7, 30, 15,255});
         }
 
         float temp_angle = (angle / 2);
@@ -205,11 +208,11 @@ public:
 
     void draw() {
 
-        DrawPoly((Vector2){ xcenter, ycenter }, 6, radius, 0.0f, SKYBLUE);
-        DrawPolyLinesEx((Vector2){ xcenter, ycenter }, 6, radius, 0.0f, tebal, GOLD);
+        DrawPoly((Vector2){ xcenter, ycenter }, 6, radius, 0.0f, RAYWHITE);
+        DrawPolyLinesEx((Vector2){ xcenter, ycenter }, 6, radius, 0.0f, tebal, BLACK);
 
         for (int i = 0; i < 6; i++) {
-            DrawLineEx((Vector2){ xcenter, ycenter }, (Vector2){ xcenter + (radius - 3) * cos(i * angle), ycenter + (radius - 3) * sin(i * angle) }, tebal, GOLD);
+            DrawLineEx((Vector2){ xcenter, ycenter }, (Vector2){ xcenter + (radius - 3) * cos(i * angle), ycenter + (radius - 3) * sin(i * angle) }, tebal, BLACK);
         }
 
         float temp_angle = (angle / 2);
@@ -263,7 +266,7 @@ void UpdateDrawFrame(void)
     // Update
     //----------------------------------------------------------------------------------
     // TODO: Update variables / Implement example logic at this point
-   
+
     frameCounter++;
     float dt = GetFrameTime();
     Vector2 mouse_pos = GetMousePosition();
@@ -283,7 +286,14 @@ void UpdateDrawFrame(void)
     BeginTextureMode(target);
         ClearBackground(LIGHTGRAY);
 
+        DrawRectangle(0, 0, 720, 145, (Color){242, 211, 171,255});
+        DrawRectangle(0, 145, 720, 115, (Color){198, 159, 165,255});
+        DrawRectangle(0, 260, 720, 190, (Color){139, 109, 156,255});
+        DrawRectangle(0, 450, 720, 150, (Color){73, 77, 126,255});
+        DrawRectangle(0, 600, 720, 150, (Color){73, 77, 126,255});
+
         mainHex.draw();
+
 
         if (hex1.isClicked) {
             hex2.draw();
@@ -304,22 +314,17 @@ void UpdateDrawFrame(void)
         // TODO: Draw your game screen here
 
         // DrawRectangle(70, 90, 200, 200, BLACK);
-        // DrawRectangle(70 + 16, 90 + 16, 200 - 32, 200 - 32, RAYWHITE);
         // DrawText("raylib", 70 + 200 - MeasureText("raylib", 40) - 32, 90 + 200 - 40 - 24, 40, BLACK);
 
         // DrawText("6.x", 290, 90 - 26, 280, BLACK);
-        // DrawText("GAMEJAM", 70, 90 + 210, 120, MAROON);
+        DrawText("Get 20 points or more \non each segment", 70, 40, 50, BLACK);
+        DrawText("This is your Hex", 10, 300, 30, BLACK);
+        DrawText("Choose one by dragging it to your hex\n It will be added to your hex", 10, 650, 30, BLACK);
 
         // if ((frameCounter/20)%2) DrawText("are you ready?", 160, 500, 50, BLACK);
         
         // DrawRectangleLinesEx((Rectangle){ 0, 0, screenWidth, screenHeight }, 16, BLACK);
 
-        //DrawTriangle(Vector2 v1, Vector2 v2, Vector2 v3, Color color);
-        // float xcenter = 330;
-        // float ycenter = 330;
-        // DrawPolyLinesEx((Vector2){ xcenter, ycenter }, 6, 85, 0.0f, 6, BEIGE);
-        // DrawLineEx((Vector2){ screenWidth/4.0f*3, 330 }, (Vector2){ screenWidth/4.0f*3+83, 330 }, 6, BEIGE);
-        
     EndTextureMode();
     
     // Render to screen (main framebuffer)
@@ -331,6 +336,13 @@ void UpdateDrawFrame(void)
             (Rectangle){ 0, 0, (float)target.texture.width, (float)target.texture.height }, (Vector2){ 0, 0 }, 0.0f, WHITE);
 
         // TODO: Draw everything that requires to be drawn at this point, maybe UI?
+        float frameRec = texUI.width/12;
+
+        for ( int i = 0; i < 6; i++) {
+
+            if (mainHex.array[i] >= 20) DrawTexturePro(texUI, (Rectangle){frameRec*5,frameRec,frameRec,frameRec}, (Rectangle){(screenWidth/8.0f)*(i + 1),160,80,80}, (Vector2){0,0}, 0.0f, WHITE);
+            else DrawTexturePro(texUI, (Rectangle){frameRec*4,frameRec*4,frameRec,frameRec}, (Rectangle){(screenWidth/8.0f)*(i + 1),160,80,80}, (Vector2){0,0}, 0.0f, WHITE);
+        }
 
     EndDrawing();
     //----------------------------------------------------------------------------------  
