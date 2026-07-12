@@ -160,7 +160,7 @@ CFLAGS = -Wall -D_DEFAULT_SOURCE -Wno-missing-braces -Wno-unused-value -Wno-poin
 #CFLAGS += -Wextra -Wmissing-prototypes -Wstrict-prototypes
 
 ifeq ($(PLATFORM),PLATFORM_WEB)
-    CFLAGS += -std=gnu99
+    CXXFLAGS += -std=gnu++17
 else
     CFLAGS += -std=c99
 endif
